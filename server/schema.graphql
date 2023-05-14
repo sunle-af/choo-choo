@@ -1,0 +1,68 @@
+# Journey States
+type Query {
+    journeyStatesData(id:ID!): journeyStates
+}
+type journeyStates{
+    id:ID!
+    name:String
+    mobileNumber:String
+    cardInUse:String
+    balance:String
+    date:String
+    time:String
+}
+
+type Mutation {
+    createJourneyStates(input: journeyStatesInput): finalresponse
+}
+input journeyStatesInput{
+    id:ID
+    name:String
+    mobileNumber:String
+    cardInUse:String
+    balance:String
+    date:String
+    time:String
+}
+type finalresponse{
+    success:Boolean
+    input:journeyStatesOutput  
+}
+type journeyStatesOutput{
+    id:ID
+    name:String
+    mobileNumber:String
+    cardInUse:String
+    balance:String
+    date:String
+    time:String
+}
+  
+
+#Querying The dummies
+type Query{
+    userData(id:ID!): User
+}
+type User{
+    id:ID!
+    name:String!
+    mobileNumber:String!
+}
+type Mutation {
+    createUser(input:CreateJobInput!) : MutationResponse!
+}
+input CreateJobInput{
+    id:ID!, 
+    name:String!, 
+    mobileNumber:String!
+}
+type MutationResponse {
+    success:Boolean!
+    input:JobOutput
+}
+type JobOutput{
+    id:ID!, 
+    name:String!, 
+    mobileNumber:String!
+}
+
