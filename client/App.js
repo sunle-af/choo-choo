@@ -10,6 +10,7 @@ import LandingPage from './src/landing/landingPage';
 import AddMoneyPage from './src/deposit/addMoney';
 
 import TestPage from './src/landing/test';
+import TestingPage from './src/landing/testing';
 const RootStack = createStackNavigator ({
   WelcomePage: {
         screen: WelcomePage, 
@@ -43,6 +44,12 @@ const RootStack = createStackNavigator ({
     },
     TestPage:{
       screen:TestPage,
+      navigationOptions:{
+        header:()=>false
+      }
+    },
+    TestingPage:{
+      screen:TestingPage,
       navigationOptions:{
         header:()=>false
       }

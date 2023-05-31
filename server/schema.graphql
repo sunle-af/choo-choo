@@ -2,6 +2,12 @@
 type Query {
     journeyStatesData(id:ID!): journeyStates
 }
+ 
+type Query {
+    journeyStatesAll:[journeyStates]
+    latestEntry:journeyStates
+}
+
 type journeyStates{
     id:ID!
     name:String

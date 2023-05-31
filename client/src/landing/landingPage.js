@@ -1,76 +1,97 @@
 import { StyleSheet, Text, View,Image, TouchableOpacity,ScrollView, KeyboardAvoidingView, Alert, Button, ImageBackground } from 'react-native';
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { useState } from 'react';
-
+import { useState , useEffect} from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client";
-
-const GRAPHQL_URL = 'http://localhost:9000/';
+const GRAPHQL_URL = 'http://192.168.0.97:3000/graphql';
 const client = new ApolloClient({
   uri: GRAPHQL_URL,
   cache: new InMemoryCache()
 });
-
 const IMAGE_URI = require('../../assets/images/2.jpg');
-const JOURNEY_STATES_DATA_QUERY = gql`
-  query ExampleQuery  {
-  journeyStatesData(id: "001001") {
-    id
-    balance
-    cardInUse
-    date
-    mobileNumber
-    name
-    time
-  }
-}
-
-`;
 
 export default function LandingPage({navigation}){
-  
-  const[result,setResult] = useState('')
-  const  {loading,data, error}  = useQuery(JOURNEY_STATES_DATA_QUERY,{client});
 
-//   const [createStates,{loading,error}] = useMutation(
-//     gql`
-//      mutation CreateJourneyStates($input:journeyStatesInput ) {
-//         createJourneyStates(input: $input) {
-//           success
-//           input {
-//             id
-//             name
-//             cardInUse
-//             mobileNumber
-//             balance
-//             date
-//             time
-//           }  
-//         }
-// }
-//   ` , {client});
+  let DateObj = new Date();
+  let id=DateObj.getTime();
+  var day=DateObj.getDate();  
+  var month=DateObj.getMonth()+1;  
+  var year=DateObj.getFullYear();  
+  let currDate = day +":"+ month +":"+year
+  let time = DateObj.getHours()+":"+DateObj.getMinutes();
+
+  const[result,setResult] = useState('')
+
+    const {data} = useQuery(
+      gql`
+        query LatestEntry {
+          latestEntry {
+            id
+            name
+            mobileNumber
+            cardInUse
+            balance
+            date
+            time
+          }
+        }
+      `,{client}
+    )
+
+    // useEffect(() => {
+    //   if (!loading && data) {
+    //     // Data fetched successfully, do something with it
+    //     console.log(data);
+    //   }
+    // }, [loading, data]);
+  
+    const getLatestEntryBtnHandler =()=>{
+        if(data){
+        console.log(data.latestEntry.name)
+        alert(data.latestEntry.name)
+        }
+    }
+
+
+  const [createStates,{loading,error}] = useMutation(
+    gql`
+     mutation CreateJourneyStates($input:journeyStatesInput ) {
+        createJourneyStates(input: $input) {
+          success
+          input {
+            id
+            name
+            cardInUse
+            mobileNumber
+            balance
+            date
+            time
+          }  
+        }
+}
+  ` , {client});
 
   if(loading) return(
     <View style={styles.container}>
       <Text>Loading.....</Text>
     </View>
     )
+
     
-  const punchMeHandler=()=>{
-      console.log(data)
-  }
   const createStatesBtnHandler=()=>{
+  
     const input={
-        "id":Date.now(),
-        "name":"xxxUser",
-        "mobileNumber":"0700071234",
-        "cardInUse":"false",
-        "balance":"10000",
-        "date":"28/04/2023",
-        "time":"10:10"
+        "id":id,
+        "name":data.latestEntry.name,
+        "mobileNumber":data.latestEntry.mobileNumber,
+        "cardInUse":  data.latestEntry.cardInUse==="false"?"true":"false" ,
+        "balance": (parseInt(data.latestEntry.balance)-100).toString(),
+        "date":currDate,
+        "time":time ,
     }
-    createStates({variables:{input}}).then(()=>alert('Done')).catch(err=>{console.log(err);  alert(err)}
+    createStates(
+      {variables:{input}}).then(()=>alert('Done')).catch(err=>{console.log(err);  alert(err)}
     )
   }
   return(
@@ -78,16 +99,9 @@ export default function LandingPage({navigation}){
             <ImageBackground source={IMAGE_URI} style={{flex:1}}>
                   <View style={styles.container}>
                     <View>
-                        <TouchableOpacity style={styles.btnStyle} onPress={punchMeHandler}>
-                            <Text style={{ color: 'white' }}>Punch Me </Text>
+                    <TouchableOpacity style={styles.btnStyle} onPress={getLatestEntryBtnHandler}>
+                            <Text style={{ color: 'white' }}>Get latestEntry  </Text>
                         </TouchableOpacity>
-                        <View style={{margin:30}}>
-                              {
-                              result!=''?<Text style={{margin:40, color: 'white' }}>{result} </Text>:<Text></Text>
-                               }
-                        </View>
-                    </View>
-                    <View>
                         <TouchableOpacity style={styles.btnStyle} onPress={createStatesBtnHandler}>
                             <Text style={{ color: 'white' }}>Mutation  </Text>
                         </TouchableOpacity>
@@ -97,10 +111,7 @@ export default function LandingPage({navigation}){
                                }
                         </View>
                     </View>
-                        
-                        
                   </View>
-
             </ImageBackground>
     </ApolloProvider>
     )  

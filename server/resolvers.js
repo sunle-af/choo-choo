@@ -2,14 +2,18 @@ import {Job} from './db.js'
 import { JourneyStates } from './db.js';
 
 export const resolvers ={
-     
+   
     Query:{
-        userData:(parent, args)=>{ 
-        const {id} =args ;
-        return Job.findById(id) 
-    }
-    },
-    Query:{
+        journeyStatesAll:async (parent,args)=>
+        {
+            const result = await JourneyStates.findAll();
+            return result;
+        },
+        latestEntry:async(parent, args) =>{
+            const result = await JourneyStates.findAll();
+            const data = result[result.length-1]
+            return data;
+        },
         journeyStatesData: async (parent,args)=> {
             const{id}= args;
              const result =  await JourneyStates.findById(id);
