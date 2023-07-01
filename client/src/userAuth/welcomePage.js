@@ -3,11 +3,20 @@ import { StyleSheet, Text, View,ImageBackground,Image, TouchableOpacity } from '
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useFonts } from 'expo-font';
-import { useCallback } from 'react';
+import { useCallback,useEffect } from 'react';
+import {app , auth} from '../../firebase';
 export default function WelcomePage({navigation}) {
   const [fontsLoaded] = useFonts({
     'Urbanist': require('../../assets/fonts/Urbanist-Regular.ttf'),
   });
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user=>{
+      if(user){
+          navigation.navigate("LandingPage")
+      }
+      return unsubscribe
+    })
+  }, [])
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -17,10 +26,10 @@ export default function WelcomePage({navigation}) {
   if (!fontsLoaded) {
     return null;
   }
+  
 
   return (
     <ImageBackground style={styles.container} 
-    // source={require('../../assets/images/welcome_bg.png')}
     source={{uri:'https://media.istockphoto.com/id/1208460773/vector/high-speed-trains.jpg?s=612x612&w=0&k=20&c=5LSpJWYpu-q-r8qHZNAGwQbF9AXTFyAFVVVuHcPOok8='}}
     >
       <View style={styles.secondView}>
@@ -35,11 +44,7 @@ export default function WelcomePage({navigation}) {
             <Text style={styles.registerTxt}>Register</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.geustLink}> 
-            <TouchableOpacity onPress={()=> navigation.navigate('LandingPage')}>
-            <Text style={styles.geustLinkTxt}>Continue as a guest</Text>
-            </TouchableOpacity>
-          </View>
+         
           </View>
           <StatusBar style="auto" />
     </ImageBackground>

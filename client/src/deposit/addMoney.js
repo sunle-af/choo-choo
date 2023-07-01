@@ -1,9 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {  Text, TextInput,Alert,Modal, View,StyleSheet,Pressable,Image, TouchableOpacity,Dimensions } from 'react-native';
 import CardsComponets from '../components/cards';
-import BackButtonCMP from '../components/backbutton';
 
+import { auth,app } from '../../firebase';
+import { doc, setDoc,updateDoc,getFirestore,getDoc,Timestamp, Firestore } from "firebase/firestore"; 
+import { BarCodeScanner } from 'expo-barcode-scanner';
+const db = getFirestore(app);
 
 import { useFonts } from 'expo-font';
 import { useCallback } from 'react';
@@ -93,13 +95,7 @@ export default function AddMoneyPage({navigation}) {
                                     </TouchableOpacity>
                                     
                                 </View>
-                                <TouchableOpacity 
-                                    onPress={successAlert}
-                                    style={
-                                      [styles.pillBtnStyle,{width:wp(50),alignSelf:'center',marginBottom:hp(5), backgroundColor:'#1DB954'}]
-                                      }>
-                                        <Text style={styles.btnTxt}>Confirm Payments</Text>
-                                    </TouchableOpacity>
+                               
                         </View>
                 </View>
              </View>
