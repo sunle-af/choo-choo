@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-
+import { NavigationContainer } from '@react-navigation/native';
 import WelcomePage from './src/userAuth/welcomePage';
 import RegisterPage from './src/userAuth/register';
 import LoginPage from './src/userAuth/login';
@@ -10,8 +10,12 @@ import LandingPage from './src/landing/landingPage';
 import AddMoneyPage from './src/deposit/addMoney';
 
 import TestPage from './src/landing/test';
-import TestingPage from './src/landing/testing';
-const RootStack = createStackNavigator ({
+import DashboardPage from './src/landing/Dashboard';
+import { HeaderBackButton } from '@react-navigation/elements';
+
+const RootStack = createStackNavigator (
+  
+  {
   WelcomePage: {
         screen: WelcomePage, 
         navigationOptions: {
@@ -33,7 +37,17 @@ const RootStack = createStackNavigator ({
     LandingPage:{
       screen:LandingPage,
       navigationOptions:{
-        header:()=>false
+        title: 'QR CODE',
+        headerLeft: () => (
+          <HeaderBackButton
+              onPress={() => navigation.navigate('AddMoneyPage')}
+              tintColor="white"
+            />
+        ),
+        headerStyle: {
+          backgroundColor: '#18252D',
+        },
+        headerTintColor: 'white',
       }
     },
     AddMoneyPage:{
@@ -48,21 +62,22 @@ const RootStack = createStackNavigator ({
         header:()=>false
       }
     },
-    TestingPage:{
-      screen:TestingPage,
+    DashboardPage:{
+      screen:DashboardPage,
       navigationOptions:{
         header:()=>false
       }
-    }
-
+    },
 }, 
 {
-    initialRouteName:'LandingPage',
-}
+    initialRouteName:'DashboardPage',
+}, 
 )
+
 const  AppContainer  = createAppContainer(RootStack);
-export default class  App extends React.Component{
-    render(){
+ 
+export default class  App extends React.Component{ 
+  render(){
         return <AppContainer />
     }
 } 

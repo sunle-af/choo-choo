@@ -1,14 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View,Image, TouchableOpacity, TextInput,KeyboardAvoidingView,ScrollView } from 'react-native';
 import { useFonts } from 'expo-font';
-import { useCallback } from 'react';
+import { useCallback,useState,useEffect } from 'react';
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-
+import {app , auth} from '../../firebase';
+import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore } from "firebase/firestore";
+import { doc, setDoc,updateDoc,Timestamp } from "firebase/firestore"; 
+const db = getFirestore(app);
 export default function RegisterPage({navigation}){
+  
+  const[email, setEmail] = useState('')
+  const[password, setPassword] = useState('')
+  const[firstname,setFirstName]=useState('')
+  const[lastname,setLastName]=useState('')
+  const[mobileNumber,setMobileNumber]=useState('')
+
   const [fontsLoaded] = useFonts({
     'Urbanist': require('../../assets/fonts/Urbanist-Regular.ttf'),
   });
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user=>{
+      if(user){
+          navigation.navigate("LandingPage")
+      }
+      return unsubscribe
+    })
+  }, [])
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -18,33 +36,55 @@ export default function RegisterPage({navigation}){
   if (!fontsLoaded) {
     return null;
   }
+ 
+  const handleSignUp=()=>{
+    createUserWithEmailAndPassword(auth, email,password)
+    .then(userCreds =>{
+        const {user} = userCreds;
+      const userData = [{
+        balance:10000,
+        cardInUse:false,
+        firstName:firstname,
+        lastName:lastname,
+        mobileNumber:mobileNumber,
+        email:email,
+        time:Timestamp.now()
+        }]
+        setDoc(doc(db, "userdata", user.uid), {userData:userData});
+        alert('Your Account is successfully created')
+        console.log(user.email)
+    } ).catch(error=>alert(error.message))
+}
+
   return (
     <ScrollView style={{flex:1,padding:wp(4), backgroundColor:'white'}}>
       <KeyboardAvoidingView style={{flex:1}} onLayout='padding'>
       <View style={styles.container}>
-            <View style={styles.backbuttonView}>
-              <TouchableOpacity onPress={()=>navigation.navigate('WelcomePage')}>
-              <Image source={require('../../assets/images/backbutton.png')} style={{width:wp(8) , height:wp(8)}} />
-              </TouchableOpacity>
-            </View>
 
             <View style={styles.titleView}>
               <Text style={styles.titleTxt}>Hello! Register to get started</Text>
             </View>
 
-            <View style={styles.dataInputView}>
-              <TextInput style={styles.inputStyle} placeholder='Full Name' />
-              <TextInput style={styles.inputStyle} placeholder='Mobile Number' />
-              <TextInput secureTextEntry style={styles.inputStyle} placeholder='Password' />
-              <TextInput secureTextEntry style={styles.inputStyle} placeholder='Confirm Password' />
-            </View>
+                    <View style={styles.dataInputView}>
+                    <TextInput style={styles.inputStyle}  value={firstname}
+            onChangeText={text=>setFirstName(text)} placeholder='First Name' />
+              <TextInput style={styles.inputStyle}  value={lastname}
+            onChangeText={text=>setLastName(text)} placeholder='Last Name' />
+              <TextInput style={styles.inputStyle}  value={mobileNumber}
+            onChangeText={text=>setMobileNumber(text)} placeholder='Mobile Number' />
+                    <TextInput style={styles.inputStyle}  value={email}
+            onChangeText={text=>setEmail(text)} placeholder='Email' />
+                    <TextInput secureTextEntry    value={password}
+            onChangeText={text=>setPassword(text)} style={styles.inputStyle} placeholder='Password' />
+                  </View>
+            
 
             <View style={styles.registerBtnView}>
-              <TouchableOpacity onPress={()=> navigation.navigate('AddMoneyPage')}> 
+              <TouchableOpacity onPress={handleSignUp}> 
                   <Text style={styles.registerBtnTxt}>Register</Text>
               </TouchableOpacity>
             </View>
-
+            
           <View style={styles.geustLinkView}> 
           <TouchableOpacity onPress={()=>navigation.navigate('LoginPage')}>
            <Text style={[styles.geustLinkTxtMain]}> Already Have an account?
@@ -52,6 +92,7 @@ export default function RegisterPage({navigation}){
            </Text>
            </TouchableOpacity>
           </View>
+        
           <StatusBar style="auto" />
           </View>
       </KeyboardAvoidingView>
@@ -83,7 +124,7 @@ const styles = StyleSheet.create({
   titleView:{
     backgroundColor:'white',
     flex:1,
-    marginBottom:wp(1)
+    marginVertical:wp(4)
   },
   titleTxt:{ 
     fontFamily:'Urbanist',

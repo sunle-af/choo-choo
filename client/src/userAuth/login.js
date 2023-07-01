@@ -1,13 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,Image, TouchableOpacity,ScrollView, KeyboardAvoidingView, TextInput } from 'react-native';
+import { StyleSheet, Text, View,Image, TouchableOpacity,ScrollView, KeyboardAvoidingView,Button, TextInput } from 'react-native';
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useState,useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { useCallback } from 'react';
+import {app , auth} from '../../firebase';
+import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from 'firebase/auth';
+import { StatusBar } from 'expo-status-bar';
 export default function LoginPage({navigation}){
   const [fontsLoaded] = useFonts({
     'Urbanist': require('../../assets/fonts/Urbanist-Regular.ttf'),
   });
+  
+  const[email, setEmail] = useState('')
+  const[password, setPassword] = useState('')
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user=>{
+      if(user){
+          navigation.navigate("LandingPage")
+      }
+      return unsubscribe
+    })
+  }, [])
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -17,28 +32,35 @@ export default function LoginPage({navigation}){
   if (!fontsLoaded) {
     return null;
   }
-  return (
-    <ScrollView style={{flex:1,padding:wp(4), backgroundColor:'white'}}>
-    <KeyboardAvoidingView style={{flex:1}} onLayout='padding'>
-    <View style={styles.container}>
-        <View style={styles.backbuttonView}>
-                  <TouchableOpacity onPress={()=>navigation.navigate('WelcomePage')}>
-                  <Image source={require('../../assets/images/backbutton.png')} style={{width:41,height:41}} /    >
-                  </TouchableOpacity>
-          </View>
+  
+  const handleLogin=()=>{
+      signInWithEmailAndPassword(auth,email,password)
+      .then(userCreds =>{
+          const user = userCreds.user;
+          alert('welcome back')
+          console.log(user.email)
+      } ).catch(error=>alert(error.message))
+  }
 
+  return (
+
+    <ScrollView style={{flex:1,padding:wp(4), backgroundColor:'white'}}>
+    <KeyboardAvoidingView style={{flex:1,justifyContent:'space-around',}} behavior='padding'>
+    <View style={styles.container}>
+         
             <View style={styles.titleView}>
               <Text style={styles.titleTxt}>Welcome back! Glad to see you, Again! </Text>
             </View>
 
-
           <View style={styles.dataInputView}>
-            <TextInput style={styles.inputStyle} placeholder='Mobile Number' />
-            <TextInput secureTextEntry style={styles.inputStyle} placeholder='Password' />
+            <TextInput style={styles.inputStyle}  value={email}
+    onChangeText={text=>setEmail(text)} placeholder='Email' />
+            <TextInput secureTextEntry    value={password}
+     onChangeText={text=>setPassword(text)} style={styles.inputStyle} placeholder='Password' />
           </View>
 
           <View style={styles.registerBtnView}>
-            <TouchableOpacity onPress={()=> navigation.navigate('AddMoneyPage')}> 
+            <TouchableOpacity onPress={handleLogin}> 
                 <Text style={styles.registerBtnTxt}>Login</Text>
             </TouchableOpacity>
           </View>
@@ -66,6 +88,7 @@ const styles = StyleSheet.create({
  container: {
   flex: 1,
   padding:wp(1),
+  justifyContent:'space-around',
   backgroundColor: 'white',
 },
 backbuttonView:{
@@ -84,7 +107,7 @@ inputStyle:{
 titleView:{
   backgroundColor:'white',
   flex:1,
-  marginBottom:wp(1)
+  marginVertical:wp(5)
 },
 titleTxt:{ 
   fontFamily:'Urbanist',
