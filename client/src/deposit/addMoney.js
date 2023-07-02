@@ -15,6 +15,8 @@ import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function AddMoneyPage({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
+
+    let [userDeposit,setUserDeposit]=useState(0);
     const [fontsLoaded] = useFonts({
       'Urbanist': require('../../assets/fonts/Urbanist-Regular.ttf'),
     });
@@ -31,21 +33,24 @@ export default function AddMoneyPage({navigation}) {
     const successAlert = () =>
     Alert.alert('SUCESS', 'Your Card is Now a Little Richer, Chuckle-cheeks!', [
       
-      {text: 'OK', onPress: () => navigation.navigate('LandingPage')},
+      {text: 'OK', onPress: () => navigation.navigate('AddMoneyPage')},
     ]);
+
+    const thousandBtnHandler=()=>{
+      setUserDeposit(1000)
+    }
+    const twothousandBtnHandler=()=>{
+      setUserDeposit(2000)
+    }
+    const tenthousandBtnHandler=()=>{
+      setUserDeposit(10000)
+    }
+
     return (
              <View style={styles.container}>
-          
-          <View style={styles.backbuttonView}>
-              <TouchableOpacity onPress={()=>navigation.navigate('WelcomePage')}>
-              <Image source={require('../../assets/images/backbutton.png')} style={{width:wp(8) , height:wp(8)}} />
-              </TouchableOpacity>
-            </View>
-
                 <View style={styles.cardsView}>
                 <CardsComponets />
                </View>
-
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -57,7 +62,7 @@ export default function AddMoneyPage({navigation}) {
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                                 <View style={styles.inputView}>
-                                <TextInput style={styles.inputStyle} placeholder='Enter Amount' />
+                                <TextInput style={styles.inputStyle} onChangeText={num=>setUserDeposit(num)}  value={userDeposit} placeholder='Enter Amount' />
                                 </View>
                             <Pressable
                             style={[styles.button, styles.buttonClose]}
@@ -70,23 +75,23 @@ export default function AddMoneyPage({navigation}) {
 
                     </View>
                 </Modal>
-
+                    <Text>{userDeposit}</Text>
                 <View style={{flex:1, borderWidth:0.3,borderRadius:8,borderColor:'#F5EAEA', backgroundColor:'rgba(58, 152, 185, 0.001)'}}>
                 <Text style={{fontWeight:'700', fontSize:36,fontFamily:'Urbanist', textAlign:'center', }}>Add Money</Text>
                 <Text style={{fontSize:18,fontFamily:'Urbanist', textAlign:'center', fontWeight:'600'}}>How much would you like to add?</Text>
                
                         <View style={styles.buttonsTabsView}>
                                 <View style={styles.rowOneView}>
-                                    <TouchableOpacity style={styles.pillBtnStyle}>
+                                    <TouchableOpacity onPress={thousandBtnHandler} style={styles.pillBtnStyle}>
                                         <Text style={styles.btnTxt} >1000</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.pillBtnStyle}>
+                                    <TouchableOpacity onPress={twothousandBtnHandler} style={styles.pillBtnStyle}>
                                         <Text style={styles.btnTxt}>2000</Text>
                                     </TouchableOpacity>
                                 </View>
                                 
                                 <View style={styles.rowOneView}>
-                                    <TouchableOpacity style={styles.pillBtnStyle}>
+                                    <TouchableOpacity onPress={tenthousandBtnHandler} style={styles.pillBtnStyle}>
                                         <Text style={styles.btnTxt} >10,000</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => setModalVisible(!modalVisible)} 
