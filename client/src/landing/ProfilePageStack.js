@@ -1,8 +1,9 @@
 import { View, Text,StyleSheet,TouchableOpacity,Image } from 'react-native'
 import React from 'react'
 import { widthPercentageToDP as wp} from 'react-native-responsive-screen';
-
+import {app , auth} from '../../firebase';
 import CardsComponets from '../components/cards'
+import { signOut } from 'firebase/auth';
 const ProfilePageStack = ({navigation}) => {
   return (
     <View style={{flex:1,alignItems:'center', }}>
@@ -19,7 +20,7 @@ const ProfilePageStack = ({navigation}) => {
     width:wp(60),
     borderRadius:8,
     backgroundColor:'#1E232C'}}>
-    <TouchableOpacity onPress={()=>navigation.navigate('LoginPage')}> 
+    <TouchableOpacity onPress={()=>{ auth.signOut().then(navigation.navigate('WelcomePage')) }}> 
         <Text style={{ fontWeight:'600',
     fontFamily:'Urbanist',
     fontSize:15,
@@ -34,7 +35,7 @@ const ProfilePageStack = ({navigation}) => {
     width:wp(60),
     borderRadius:8,
     backgroundColor:'#1E232C'}}>
-    <TouchableOpacity onPress={()=>navigation.navigate('LoginPage')}> 
+    <TouchableOpacity onPress={()=>navigation.navigate('LandingPage')}> 
         <Text style={{ fontWeight:'600',
     fontFamily:'Urbanist',
     fontSize:15,

@@ -38,7 +38,7 @@ function HomePageTab({navigation}) {
   function ProfileTab() {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                   <ProfilePageStack />
+            <ProfilePageStack />
       </View>
     );
   }
@@ -99,38 +99,6 @@ export default function DashboardPage({navigation}) {
       </NavigationContainer>
 )
 }
-const styles = StyleSheet.create({
-    container:{
-      flex: 1,
-      padding:wp(5),
-      backgroundColor: 'white',
-      },
-      cardsView:{
-          flex:1,
-          justifyContent:'space-around',
-          alignItems:'center',
-      },
-      qrCodeView:{
-        flex:1,
-        margin:5,
-        width:'100%',
-          alignItems:'center',
-      },
-      geustLink:{
-        margin:wp(5),
-      },
-      geustLinkTxt:{
-        borderRadius:10,
-        backgroundColor:'#C92C6D',
-        padding:10,
-        fontFamily:'Urbanist',
-        color:'white',
-        fontSize:12,
-        borderBottomWidth:0.5,
-        borderBottomColor:'#609EA2'
-      }
-     
-    });
-
+ 
 
   

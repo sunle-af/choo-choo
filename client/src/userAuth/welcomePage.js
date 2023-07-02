@@ -12,7 +12,7 @@ export default function WelcomePage({navigation}) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user=>{
       if(user){
-          navigation.navigate("LandingPage")
+          navigation.navigate("MyTabs")
       }
       return unsubscribe
     })
