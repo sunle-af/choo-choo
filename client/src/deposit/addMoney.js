@@ -45,7 +45,43 @@ export default function AddMoneyPage({navigation}) {
     const tenthousandBtnHandler=()=>{
       setUserDeposit(10000)
     }
-
+    const updateBlanceHandler=async()=>{
+      const myUserDb = doc(db, "userdata", auth.currentUser.uid);
+      try {
+        const docSnap = await getDoc(myUserDb);
+        if (docSnap.exists())
+                  {
+                    const existingData = docSnap.data().userData || [];
+                    console.log(existingData)
+                    let size = existingData.length-1;
+                    let balance = parseInt(existingData[size].balance);
+                     if(userDeposit>0){
+                      const newData = [{
+                        balance: balance+ parseInt(userDeposit) ,
+                        cardInUse: (existingData[size].cardInUse),
+                        firstName:existingData[size].firstName ,
+                        lastName:existingData[size].lastName,
+                        mobileNumber:existingData[size].mobileNumber,
+                        email:existingData[size].email,
+                        time:Timestamp.now()
+                        }]
+                      const updatedData = [...existingData, ...newData];
+                      await updateDoc(myUserDb, { userData: updatedData })
+                      .then(()=>{alert(`${userDeposit} has been added to your card`) })
+                      .catch((error)=>alert(error))
+                           
+                     }else{
+                      alert('Please insert a valid deposit amount')
+                     }
+                       
+                  } 
+        else {
+          console.log("Document does not exist!");
+        }
+      } catch (error) {
+        console.error("Error adding data:", error);
+      }
+    }
     return (
              <View style={styles.container}>
                 <View style={styles.cardsView}>
@@ -62,7 +98,10 @@ export default function AddMoneyPage({navigation}) {
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                                 <View style={styles.inputView}>
-                                <TextInput style={styles.inputStyle} onChangeText={num=>setUserDeposit(num)}  value={userDeposit} placeholder='Enter Amount' />
+                                <TextInput style={styles.inputStyle} onChangeText={num=>setUserDeposit(num)}
+                                keyboardType='numeric'
+                                maxLength={5}
+                                value={userDeposit} placeholder='Enter Amount' />
                                 </View>
                             <Pressable
                             style={[styles.button, styles.buttonClose]}
@@ -75,7 +114,8 @@ export default function AddMoneyPage({navigation}) {
 
                     </View>
                 </Modal>
-                    <Text>{userDeposit}</Text>
+                   
+                             
                 <View style={{flex:1, borderWidth:0.3,borderRadius:8,borderColor:'#F5EAEA', backgroundColor:'rgba(58, 152, 185, 0.001)'}}>
                 <Text style={{fontWeight:'700', fontSize:36,fontFamily:'Urbanist', textAlign:'center', }}>Add Money</Text>
                 <Text style={{fontSize:18,fontFamily:'Urbanist', textAlign:'center', fontWeight:'600'}}>How much would you like to add?</Text>
@@ -83,7 +123,7 @@ export default function AddMoneyPage({navigation}) {
                         <View style={styles.buttonsTabsView}>
                                 <View style={styles.rowOneView}>
                                     <TouchableOpacity onPress={thousandBtnHandler} style={styles.pillBtnStyle}>
-                                        <Text style={styles.btnTxt} >1000</Text>
+                                        <Text style={styles.btnTxt}>1000</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={twothousandBtnHandler} style={styles.pillBtnStyle}>
                                         <Text style={styles.btnTxt}>2000</Text>
@@ -100,6 +140,17 @@ export default function AddMoneyPage({navigation}) {
                                     </TouchableOpacity>
                                     
                                 </View>
+                                {userDeposit>0 ?  
+                                <View style={{alignItems:'center'}}>
+                                  <Text>
+                                    Your Selected Amount 
+                                    <Text style={{fontWeight:'700'}}> {userDeposit}</Text>
+                                  </Text>
+                                  <TouchableOpacity onPress={updateBlanceHandler} style={[styles.pillBtnStyle,{alignSelf:'center', backgroundColor:'green'}]}>
+                                <Text style={styles.btnTxt}>Update Balance</Text>
+                            </TouchableOpacity> 
+                            </View> 
+                                 :<Text></Text> }
                                
                         </View>
                 </View>
@@ -184,6 +235,7 @@ export default function AddMoneyPage({navigation}) {
           pillBtnStyle:{
             width:wp(40),
             height:hp(5),
+            margin:10,
             justifyContent:'space-around',
             alignItems:'center', 
             borderRadius:10,
